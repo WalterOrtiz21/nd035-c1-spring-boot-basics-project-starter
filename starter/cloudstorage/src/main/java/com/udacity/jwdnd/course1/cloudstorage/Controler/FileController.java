@@ -33,6 +33,11 @@ public class FileController {
     @PostMapping("/upload")
     public String uploadFile(MultipartFile fileUpload, Model model, HttpServletRequest request) throws IOException {
         File file = new File();
+        String fileError = null;
+
+        if (!fileServices.isFileNameAvailable(fileUpload.getOriginalFilename())) {
+            fileError = "The fileName already exists.";
+        }
         Principal principal = request.getUserPrincipal();
         User user = userService.getUser(principal.getName());
         file.setContentType(fileUpload.getContentType());
@@ -40,9 +45,16 @@ public class FileController {
         file.setFileName(fileUpload.getOriginalFilename());
         file.setFileSize(fileUpload.getSize());
         file.setUserId(user.getUserId());
-        fileServices.createFile(file);
+        if (fileError == null) {
+            int rowsAdded = fileServices.createFile(file);
+            if (rowsAdded < 0) {
+                fileError = "There was an error uploading the file. Please try again.";
+            }
+        }
         List<File> list =  fileServices.getFiles(user.getUserId());
         model.addAttribute("files",list);
+        model.addAttribute("fileError", fileError);
+        model.addAttribute("isFile", "true");
         return "home";
     }
 

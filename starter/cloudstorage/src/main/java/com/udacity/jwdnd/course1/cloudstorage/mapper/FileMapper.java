@@ -9,19 +9,15 @@ import java.util.List;
 @Mapper
 public interface FileMapper {
 
-    /*fileId INT PRIMARY KEY auto_increment,
-    filename VARCHAR,
-    contenttype VARCHAR,
-    filesize VARCHAR,
-    userid INT,
-    filedata BLOB,
-    foreign key (userid) references USERS(userid)*/
 
     @Select("SELECT * FROM FILES WHERE userid = #{userID}")
     List<File> getFiles(Integer userID);
 
     @Select("SELECT * FROM FILES WHERE fileId = #{fileId}")
     File getFile(Integer fileId);
+
+    @Select("SELECT * FROM FILES WHERE filename = #{fileName}")
+    File getFileByName(String fileName);
 
     @Insert("INSERT INTO FILES (filename, contentType, fileSize, userId, fileData) " +
             "VALUES(#{fileName}, #{contentType}, #{fileSize}, #{userId}, #{fileData})")
