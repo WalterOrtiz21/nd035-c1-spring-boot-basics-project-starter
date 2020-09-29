@@ -32,8 +32,8 @@ public class FileServices {
         return fileMapper.getFileByName(fileName);
     }
 
-    public void deleteFile(Integer fileId) {
-        fileMapper.delete(fileId);
+    public int deleteFile(Integer fileId) {
+        return fileMapper.delete(fileId);
     }
 
     public boolean isFileNameAvailable(String fileName) {

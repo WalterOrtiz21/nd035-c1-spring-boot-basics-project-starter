@@ -1,10 +1,9 @@
 package com.udacity.jwdnd.course1.cloudstorage.Controler;
 
 import com.udacity.jwdnd.course1.cloudstorage.Model.Credential;
-import com.udacity.jwdnd.course1.cloudstorage.Model.Note;
 import com.udacity.jwdnd.course1.cloudstorage.Model.User;
 import com.udacity.jwdnd.course1.cloudstorage.services.CredentialServices;
-import com.udacity.jwdnd.course1.cloudstorage.services.NoteServices;
+import com.udacity.jwdnd.course1.cloudstorage.services.EncryptionService;
 import com.udacity.jwdnd.course1.cloudstorage.services.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,6 +21,7 @@ public class CredentialController {
 
     private final UserService userService;
 
+
     public CredentialController(CredentialServices credentialServices, UserService userService) {
         this.credentialServices = credentialServices;
         this.userService = userService;
@@ -32,24 +32,31 @@ public class CredentialController {
         Principal principal = request.getUserPrincipal();
         User user = userService.getUser(principal.getName());
         credential.setUserId(user.getUserId());
+        int result = 0;
         if(credential.getCredentialId() == null){
-            credentialServices.createCredential(credential);
+            result = credentialServices.createCredential(credential);
         }else{
-            credentialServices.updateCredential(credential);
+            result = credentialServices.updateCredential(credential);
         }
-
-        List<Credential> credentials = credentialServices.getCredentials(user.getUserId());
-        model.addAttribute("credentials",credentials);
-        return "home";
+        if (result == 1){
+            model.addAttribute("successResult", true);
+        }else{
+            model.addAttribute("errorResult", true);
+            model.addAttribute("errorResultMessage", "Process Failed");
+        }
+        return "result";
     }
 
     @GetMapping("/delete")
     public String deleteFile(@RequestParam("credentialid") int credentialId, Model model, HttpServletRequest request) {
-        credentialServices.deleteCredential(credentialId);
-        Principal principal = request.getUserPrincipal();
-        User user = userService.getUser(principal.getName());
-        List<Credential> credentials = credentialServices.getCredentials(user.getUserId());
-        model.addAttribute("credentials",credentials);
-        return "home";
+        int result = 0;
+        result = credentialServices.deleteCredential(credentialId);
+        if (result == 1){
+            model.addAttribute("successResult", true);
+        }else{
+            model.addAttribute("errorResult", true);
+            model.addAttribute("errorResultMessage", "Process Failed");
+        }
+        return "result";
     }
 }

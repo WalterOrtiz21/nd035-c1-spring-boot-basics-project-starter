@@ -34,21 +34,23 @@ public class NoteController {
     public String uploadFile(@ModelAttribute Note note, Model model, HttpServletRequest request) {
         Principal principal = request.getUserPrincipal();
         User user = userService.getUser(principal.getName());
+        note.setUserId(user.getUserId());
         if (!noteServices.isNoteTitleAvailable(note.getNoteTitle())) {
-            List<Note> notes = noteServices.getNotes(user.getUserId());
-            model.addAttribute("notes",notes);
-            model.addAttribute("isNote",true);
-            return "home";
+            return "/home";
         }
-        if(note.getNoteId() == null){
-            note.setUserId(user.getUserId());
-            noteServices.createNote(note);
+        int result = 0;
+        if(note.getNoteId() == null)
+            result = noteServices.createNote(note);
+        else
+            result = noteServices.updateNote(note);
+
+        if (result == 1){
+            model.addAttribute("successResult", true);
         }else{
-            noteServices.updateNote(note);
+            model.addAttribute("errorResult", true);
+            model.addAttribute("errorResultMessage", "Error Uploading file");
         }
-        List<Note> notes = noteServices.getNotes(user.getUserId());
-        model.addAttribute("notes",notes);
-        return "home";
+        return "result";
     }
 
     @GetMapping("/show")
@@ -60,11 +62,14 @@ public class NoteController {
 
     @GetMapping("/delete")
     public String deleteFile(@RequestParam("noteid") int fileID, Model model, HttpServletRequest request) {
-            noteServices.deleteNote(fileID);
-        Principal principal = request.getUserPrincipal();
-        User user = userService.getUser(principal.getName());
-        List<Note> list =  noteServices.getNotes(user.getUserId());
-        model.addAttribute("notes",list);
-        return "home";
+        int result = 0;
+        result = noteServices.deleteNote(fileID);
+        if (result == 1) {
+            model.addAttribute("successResult", true);
+        } else {
+            model.addAttribute("errorResult", true);
+            model.addAttribute("errorResultMessage", "Error Deleting file");
+        }
+        return "result";
     }
 }
