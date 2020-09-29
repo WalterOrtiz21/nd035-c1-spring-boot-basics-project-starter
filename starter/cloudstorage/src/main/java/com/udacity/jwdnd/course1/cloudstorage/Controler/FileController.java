@@ -45,17 +45,20 @@ public class FileController {
         file.setFileName(fileUpload.getOriginalFilename());
         file.setFileSize(fileUpload.getSize());
         file.setUserId(user.getUserId());
+        int result = 0;
         if (fileError == null) {
-            int rowsAdded = fileServices.createFile(file);
-            if (rowsAdded < 0) {
+            result = fileServices.createFile(file);
+            if (result < 0) {
                 fileError = "There was an error uploading the file. Please try again.";
             }
         }
-        List<File> list =  fileServices.getFiles(user.getUserId());
-        model.addAttribute("files",list);
-        model.addAttribute("fileError", fileError);
-        model.addAttribute("isFile", "true");
-        return "home";
+        if (result == 1){
+            model.addAttribute("successResult", true);
+        }else{
+            model.addAttribute("errorResult", true);
+            model.addAttribute("errorResultMessage", fileError);
+        }
+        return "result";
     }
 
     @GetMapping("/show")
@@ -71,12 +74,15 @@ public class FileController {
     }
 
     @GetMapping("/delete")
-    public String deleteFile(@RequestParam("fileID") int fileID, Model model, HttpServletRequest request) {
-        fileServices.deleteFile(fileID);
-        Principal principal = request.getUserPrincipal();
-        User user = userService.getUser(principal.getName());
-        List<File> list =  fileServices.getFiles(user.getUserId());
-        model.addAttribute("files",list);
-        return "home";
+    public String deleteFile(@RequestParam("fileID") int fileID, Model model) {
+        int result = 0;
+        result = fileServices.deleteFile(fileID);
+        if (result == 1){
+            model.addAttribute("successResult", true);
+        }else{
+            model.addAttribute("errorResult", true);
+            model.addAttribute("errorResultMessage", "Delete file failed");
+        }
+        return "result";
     }
 }

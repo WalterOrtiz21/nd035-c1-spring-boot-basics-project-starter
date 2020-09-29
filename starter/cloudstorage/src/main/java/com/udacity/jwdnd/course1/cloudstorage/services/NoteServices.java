@@ -35,8 +35,8 @@ public class NoteServices {
         return noteMapper.getNote(fileId);
     }
 
-    public void deleteNote(Integer fileId) {
-        noteMapper.delete(fileId);
+    public int deleteNote(Integer fileId) {
+       return noteMapper.delete(fileId);
     }
 
     public boolean isNoteTitleAvailable(String noteTitle) {

@@ -38,4 +38,26 @@ class CloudStorageApplicationTests {
 		Assertions.assertEquals("Login", driver.getTitle());
 	}
 
+	@Test
+	public void getSignPage() throws InterruptedException {
+		driver.get("http://localhost:" + this.port + "/signup");
+		Thread.sleep(2000);
+		Assertions.assertEquals("Sign Up", driver.getTitle());
+	}
+
+	@Test
+	public void getHomePage() throws InterruptedException {
+		driver.get("http://localhost:" + this.port + "/home");
+		Thread.sleep(2000);
+		Assertions.assertEquals("Login", driver.getTitle());
+
+	}
+
+	@Test
+	public void getResultPage() throws InterruptedException {
+		driver.get("http://localhost:" + this.port + "/result");
+		Thread.sleep(2000);
+		Assertions.assertEquals("Login", driver.getTitle());
+
+	}
 }
