@@ -144,7 +144,7 @@ public class NoteTests {
 
 	private void gotoNotes(WebDriverWait wait, JavascriptExecutor executor) {
 		WebElement btn;
-		btn = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("back-home")));
+		btn = driver.findElement(By.id("back-home"));
 		executor.executeScript("arguments[0].click();", btn);
 		btn = driver.findElement(By.id("nav-notes-tab"));
 		executor.executeScript("arguments[0].click();", btn);
